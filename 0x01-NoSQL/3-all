@@ -1,0 +1,2 @@
+// A script tht=at lists all docs of a collection.
+db.school.find().forEach(printjson)
