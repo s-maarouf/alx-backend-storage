@@ -1,0 +1,2 @@
+// A scrip that adds a new attribute to a doc
+db.school.find({name: "Holberton school"}).forEach().updateOne({adress: "972 Mission street"});
