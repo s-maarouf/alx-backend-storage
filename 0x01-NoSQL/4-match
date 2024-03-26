@@ -1,0 +1,2 @@
+// A scrip that lists all docs with "Holberton school"
+db.school.find({name: "HHolberton school"}).forEach(printjson);
