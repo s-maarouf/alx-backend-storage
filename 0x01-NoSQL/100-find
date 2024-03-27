@@ -1,0 +1,2 @@
+// A scrip that lists all docs with a specific tag
+db.school.find({name: /Holberton.*/}).forEach(printjson);
