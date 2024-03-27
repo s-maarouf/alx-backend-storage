@@ -1,0 +1,2 @@
+// A script that deletes all docs of a collection.
+db.school.deleteMany({name: "Holberton school"});
