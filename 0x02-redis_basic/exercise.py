@@ -35,6 +35,30 @@ def call_history(method: Callable) -> Callable:
     return invoker
 
 
+def replay(fn: Callable) -> None:
+    """Displays the call history of a Cache class' method"""
+    if fn is None or not hasattr(fn, '__self__'):
+        return
+    redis_store = getattr(fn.__self__, '_redis', None)
+    if not isinstance(redis_store, redis.Redis):
+        return
+    fcn_name = fn.__qualname__
+    in_key = '{}:inputs'.format(fcn_name)
+    out_key = '{}:outputs'.format(fcn_name)
+    fcn_call_count = 0
+    if redis_store.exists(fcn_name) != 0:
+        fcn_call_count = int(redis_store.get(fcn_name))
+    print('{} was called {} times:'.format(fcn_name, fcn_call_count))
+    fcn_inputs = redis_store.lrange(in_key, 0, -1)
+    fcn_outputs = redis_store.lrange(out_key, 0, -1)
+    for fcn_input, fcn_output in zip(fcn_inputs, fcn_outputs):
+        print('{}(*{}) -> {}'.format(
+            fcn_name,
+            fcn_input.decode("utf-8"),
+            fcn_output,
+        ))
+
+
 class Cache:
     """Cache class"""
 
