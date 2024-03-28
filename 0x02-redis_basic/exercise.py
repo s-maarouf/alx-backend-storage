@@ -4,17 +4,30 @@
 
 import redis
 import uuid
-from typing import Union, Callable
+from typing import Union, Callable, Any
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """Counts how many times Cache was called"""
+    @wraps(method)
+    def invoker(self, *args, **kwargs) -> Any:
+        '''Invokes the given method after incrementing its call counter.
+        '''
+        if isinstance(self._redis, redis.Redis):
+            self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwargs)
+    return invoker
 
 
 class Cache:
     """Cache class"""
-
     def __init__(self) -> None:
         """stores an instance of redis"""
         self._redis = redis.Redis()
         self._redis.flushdb(True)
 
+    @count_calls
     def store(self, data: Union[str, int, bytes, float]) -> str:
         """returns generated key"""
         data_key = str(uuid.uuid1())
